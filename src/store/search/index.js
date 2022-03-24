@@ -17,12 +17,15 @@ const mutations = {
   }
 }
 const getters = {
+  //获得的数据列表
   goodsList(state){
     return state.searchInfo.goodsList
   },
+  //品牌分类
   trademarkList(state){
     return state.searchInfo.trademarkList
   },
+  //标签分类
   attrsList(state){
     return state.searchInfo.attrsList
   }

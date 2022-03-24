@@ -11,7 +11,7 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            //面包屑，需要判断是否展示
+            <!-- //面包屑，需要判断是否展示 -->
             <li class="with-x" v-show="searchParams.categoryName">
               {{ searchParams.categoryName }}<i @click="removeQuery">×</i>
             </li>
@@ -19,34 +19,50 @@
               {{ searchParams.keyword }}<i @click="removeParams">×</i>
             </li>
             <li class="with-x" v-show="searchParams.trademark">
-              {{ searchParams.trademark.split(":")[1]}}<i @click="removeTrademark">×</i>
+              {{ searchParams.trademark.split(":")[1]
+              }}<i @click="removeTrademark">×</i>
+            </li>
+            <li
+              class="with-x"
+              v-for="(attrValue, index) in searchParams.props"
+              :key="index"
+            >
+              {{ attrValue.split(":")[1] }}<i @click="removeAttr(index)">×</i>
             </li>
           </ul>
         </div>
         <!--selector-->
-        <SearchSelector @trademarkInfo="trademarkInfo" />
+        <SearchSelector @trademarkInfo="trademarkInfo" @attrInfo="attrInfo" />
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <!-- 根据order属性来判断哪个类名为class -->
+                <li :class="{ active: isOne }" @click="changeOrder('1')">
+                  <!-- 利用类名判断升序降序及展示 -->
+                  <a
+                    >综合<span
+                      v-show="isOne"
+                      class="iconfont"
+                      :class="{
+                        'icon-jiantou_xiangxia': !isAsc,
+                        'icon-jiantou_xiangshang': isAsc,
+                      }"
+                    ></span
+                  ></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{ active: !isOne }" @click="changeOrder('2')">
+                  <a
+                    >销量<span
+                      v-show="!isOne"
+                      class="iconfont"
+                      :class="{
+                        'icon-jiantou_xiangxia': !isAsc,
+                        'icon-jiantou_xiangshang': isAsc,
+                      }"
+                    ></span
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -92,35 +108,13 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination
+            :pageNo="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="total"
+            :continues="5"
+            @getPageNo="getPageNo"
+          ></Pagination>
         </div>
       </div>
     </div>
@@ -140,13 +134,27 @@ export default {
         category3Id: "",
         categoryName: "",
         keyword: "",
-        order: "",
+        order: "1:desc", //排序，共有四种情况 初始值为综合降序
         pageNo: 1,
         pageSize: 10,
         props: [],
         trademark: "",
       },
     };
+  },
+  computed: {
+    ...mapGetters(["goodsList", "trademarkList", "attrsList"]),
+    isOne() {
+      return this.searchParams.order.includes("1");
+    },
+    isAsc() {
+      return this.searchParams.order.includes("asc");
+    },
+    ...mapState({
+      total(state){
+        return state.search.searchInfo.total
+      }
+    }),
   },
   methods: {
     getData() {
@@ -170,9 +178,45 @@ export default {
       this.getData();
     },
     removeTrademark() {
-      this.searchParams.trademark = '';
-      this.getData()
+      this.searchParams.trademark = "";
+      this.getData();
       // this.$router.push({ name: "search", query: this.$route.query });
+    },
+
+    //接收子组件传来的props参数，重新发请求
+    attrInfo(attr, value) {
+      // console.log(attr,value);
+      let props = `${attr.attrId}:${value}:${attr.attrName}`;
+
+      //为避免同一属性重复添加，需要对对数组进行去重
+      if (this.searchParams.props.indexOf(props) === -1) {
+        this.searchParams.props.push(props);
+      }
+      this.getData();
+    },
+    removeAttr(index) {
+      this.searchParams.props.splice(index, 1);
+      this.getData();
+    },
+    // 综合销量的点击事件
+    changeOrder(flag) {
+      let originFlag = this.searchParams.order.split(":")[0];
+      let originSort = this.searchParams.order.split(":")[1];
+      if (flag == originFlag) {
+        this.searchParams.order = `${originFlag}:${
+          originSort == "desc" ? "asc" : "desc"
+        }`;
+        this.getData();
+      } else {
+        this.searchParams.order = `${flag}:${originSort}`;
+        this.getData();
+      }
+    },
+    getPageNo(pageNo) {
+      //整理带给服务器参数
+      this.searchParams.pageNo = pageNo;
+      //再次发请求
+      this.getData();
     },
   },
   watch: {
@@ -191,14 +235,7 @@ export default {
   // updated(){
   //   this.getData()
   // },
-  computed: {
-    // ...mapState({
-    //   goodsList(state){
-    //     return state.search.searchInfo.goodsList
-    //   }
-    // })
-    ...mapGetters(["goodsList", "trademarkList", "attrsList"]),
-  },
+
   components: {
     SearchSelector,
   },
