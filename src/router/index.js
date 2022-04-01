@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import Search from "@/pages/Search";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Detail from "@/pages/Detail"
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -38,8 +39,17 @@ export default new VueRouter({
         meta:{showFooter:false}
       },
       {
+        path:"/item/:skuId",
+        component:Detail,
+        meta:{showFooter:false}
+      },
+      {
         path:"*",
         redirect:'/home'
       }
-    ]
+    ],
+    // 控制滚动行为
+    scrollBehavior(to,from,savedPosition){
+      return {y : 0}
+    }
 })

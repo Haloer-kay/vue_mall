@@ -43,3 +43,11 @@ export const reqAddUser=(data)=>{
     data:data,
   })
 }
+// 请求商品详情
+// /api/item/{ skuId }
+export const reqGetDetail=(skuId)=>{
+  return requests({
+    url:`/item/${skuId}`,
+    method:"get",
+  })
+}
