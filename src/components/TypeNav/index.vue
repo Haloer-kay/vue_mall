@@ -132,7 +132,7 @@ export default {
     //向store发送一个categoryList事件，第二个参数为向actions发送的数据
     // this.$store.dispatch("categoryList");被移动到了app.vue
     //跳转路由时组件每次都会被重新挂载，使得进入search路由后TypeNav默认隐藏
-    if (this.$route.path == "/search") {
+    if (this.$route.path != "/home") {
       this.show = false;
     }
   },

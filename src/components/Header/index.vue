@@ -5,12 +5,17 @@
       <div class="container">
         <div class="loginList">
           <p>尚品汇欢迎您！</p>
-          <p>
+
+          <p v-if="!username">
             <span>请</span>
             <!-- <a href="###">登录</a> -->
             <router-link to="/login">登录</router-link>
             <!-- <a href="###" class="register">免费注册</a> -->
             <router-link to="/register" class="register">免费注册</router-link>
+          </p>
+          <p v-else>
+            <a href="">{{username}}</a>
+            <a href="" class="register">退出</a>
           </p>
         </div>
         <div class="typeList">
@@ -63,6 +68,11 @@ export default {
           location.query = this.$route.query
           this.$router.push(location)
       }
+    }
+  },
+  computed:{
+    username(){
+      return this.$store.state.user.userInfo.name
     }
   },
   mounted(){

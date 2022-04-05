@@ -1,21 +1,53 @@
 <template>
   <div class="spec-preview">
-    <img src="../images/s1.png" />
-    <div class="event"></div>
+    <img :src="skuImageList[0].imgUrl" />
+    <div class="event" @mousemove="handler"></div>
     <div class="big">
-      <img src="../images/s1.png" />
+      <img :src="skuImageList[0].imgUrl"  ref="big"/>
     </div>
-    <div class="mask"></div>
+    <div class="mask" ref="mask"></div>
   </div>
 </template>
 
 <script>
   export default {
     name: "Zoom",
+    props:{
+      skuImageList:{
+        type:Array,
+        default:()=>[{}]
+      }
+    },
+    methods:{
+      handler(event){
+        let big=this.$refs.big
+        let mask=this.$refs.mask
+        let width=mask.offsetHeight
+        let height=mask.offsetWidth
+        let left=event.offsetX-width/2
+        let top=event.offsetY-height/2
+        if(left<=0){
+          left=0
+        }
+        if(left>=width){
+          left=width
+        }
+        if(top<=0){
+          top=0
+        }
+        if(top>=height){
+          top=height
+        }
+        mask.style.left=left+"px"
+        mask.style.top=top+"px"
+        big.style.left=-2*left+"px"
+        big.style.top=-2*top+"px"
+      }
+    }
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .spec-preview {
     position: relative;
     width: 400px;

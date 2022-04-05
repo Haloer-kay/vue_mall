@@ -6,6 +6,9 @@ import Search from "@/pages/Search";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Detail from "@/pages/Detail"
+import AddCartSuccess from "@/pages/AddCartSuccess"
+import ShopCart from "@/pages/ShopCart"
+
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -44,9 +47,21 @@ export default new VueRouter({
         meta:{showFooter:false}
       },
       {
+        path:"/addcartsuccess",
+        name:"addcartsuccess",
+        component:AddCartSuccess,
+        meta:{showFooter:true}
+      },
+      {
+        path:"/shopcart",
+        component:ShopCart,
+        meta:{showFooter:true}
+      },
+      {
         path:"*",
         redirect:'/home'
-      }
+      },
+  
     ],
     // 控制滚动行为
     scrollBehavior(to,from,savedPosition){

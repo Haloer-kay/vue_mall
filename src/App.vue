@@ -20,6 +20,7 @@ export default {
   //由于app.vue只执行一次，可以避免因切换路由而再次发送路由
   mounted() {
     this.$store.dispatch("categoryList");
+    this.$store.dispatch("getUserInfo")
   },
   beforeDestroy(){
     this.$bus.$off("clearKey")

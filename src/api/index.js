@@ -2,6 +2,7 @@
 // 三级联动接口   /api/product/getBaseCategoryList   无参数
 import requests from "./request";
 import mockReq from "./mockReq.js"
+import { method } from "lodash";
 
 export const reqCategoryList = () =>{
   return requests({
@@ -50,4 +51,57 @@ export const reqGetDetail=(skuId)=>{
     url:`/item/${skuId}`,
     method:"get",
   })
+}
+// /api/cart/addToCart/{ skuId }/{ skuNum }  添加到购物车  post
+
+export const reqAddCart=(skuId,skuNum)=>{
+  return requests({
+    url:`/cart/addToCart/${ skuId }/${ skuNum }`,
+    method:"post",
+  })
+}
+// 获取购物车列表/api/cart/cartList
+export const reqCartList=()=>{
+  return requests({
+    url:"/cart/cartList",
+    method:"get"
+  })
+}
+//添加到购物车  post请求
+// /api/cart/addToCart/{ skuId }/{ skuNum }
+export const reqAddToCart=(skuId,skuNum)=>{
+  return requests({
+    url:`/cart/addToCart/${skuId}/${ skuNum }`,
+    method:"post"
+  })
+}
+
+export const deleteShopCart=(skuId)=>{
+  return requests({
+    url:`/cart/deleteCart/${skuId}`,
+    method:"delete"
+  })
+}
+// /cart/checkCart/{skuID}/{isChecked}
+export const reqCheckCart=(skuID,isChecked)=>{
+  return requests({
+    url:`/cart/checkCart/${skuID}/${isChecked}`,
+    method:"get"
+  })
+}
+//登录接口
+// /api/user/passport/login
+export const reqLogin=(data)=>{
+  return requests({
+    url:`/user/passport/login`,
+    method:"post",
+    data,
+  })
+}
+//获取用户信息，需要携带token
+export const reqUserInfo=()=>{
+    return requests({
+      url:"/user/passport/auth/getUserInfo",
+      method:"get"
+    })
 }
