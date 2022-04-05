@@ -14,8 +14,8 @@
             <router-link to="/register" class="register">免费注册</router-link>
           </p>
           <p v-else>
-            <a href="">{{username}}</a>
-            <a href="" class="register">退出</a>
+            <a href="">{{ username }}</a>
+            <a style="cursor:pointer" class="register" @click="logout">退出</a>
           </p>
         </div>
         <div class="typeList">
@@ -45,7 +45,11 @@
             class="input-error input-xxlarge"
             v-model="keyword"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="goSearch">
+          <button
+            class="sui-btn btn-xlarge btn-danger"
+            type="button"
+            @click="goSearch"
+          >
             搜索
           </button>
         </form>
@@ -56,30 +60,40 @@
 
 <script>
 export default {
-  data(){
-    return{
-      keyword:''
-    }
+  data() {
+    return {
+      keyword: "",
+    };
   },
-  methods:{
-    goSearch(){
-      if(this.$route.query){
-          let location = {name:"search",params:{keyword:this.keyword}}
-          location.query = this.$route.query
-          this.$router.push(location)
+  methods: {
+    goSearch() {
+      if (this.$route.query) {
+        let location = { name: "search", params: { keyword: this.keyword } };
+        location.query = this.$route.query;
+        this.$router.push(location);
       }
-    }
+    },
+    async logout() {
+      try {
+        await this.$store.dispatch("logout");
+        console.log("nice")
+        this.$router.push("/home");
+      } catch (error) {
+        console.log(error.message);
+      }
+    },
   },
-  computed:{
-    username(){
-      return this.$store.state.user.userInfo.name
-    }
+  computed: {
+    username() {
+      return this.$store.state.user.userInfo.name;
+    },
   },
-  mounted(){
-    this.$bus.$on("clearKey",()=>{
-      this.keyword = ''
-    })
-  }
+  mounted() {
+    this.$store.dispatch("getUserInfo")
+    this.$bus.$on("clearKey", () => {
+      this.keyword = "";
+    });
+  },
 };
 </script>
 
@@ -101,7 +115,6 @@ export default {
         p {
           float: left;
           margin-right: 10px;
-
           .register {
             border-left: 1px solid #b3aeae;
             padding: 0 5px;

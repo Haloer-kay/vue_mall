@@ -105,3 +105,10 @@ export const reqUserInfo=()=>{
       method:"get"
     })
 }
+// /api/user/passport/logout
+export const reqLogout=()=>{
+  return requests({
+    url:"/user/passport/logout",
+    method:"get"
+  })
+}

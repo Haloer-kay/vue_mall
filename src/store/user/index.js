@@ -1,9 +1,10 @@
-import { reqGetCode, reqAddUser, reqLogin, reqUserInfo } from "@/api";
+import { reqGetCode, reqAddUser, reqLogin, reqUserInfo, reqLogout } from "@/api";
 import { setToken,getToken } from "@/utils";
 
 const state = {
   code: "",
-  userInfo:{}
+  userInfo:{},
+  token:getToken()
 };
 const actions = {
   //获取验证码
@@ -42,14 +43,29 @@ const actions = {
     }else{
       return Promise.reject(new Error("faile"))
     }
+  },
+  // 退出登录
+  async logout({commit}){
+    let result= await reqLogout()
+    console.log("nice",result );
+      if(result.code==200){
+        commit("LOGOUT")
+        return "ok"
+      }else{
+        return Promise.reject(new Error("faile"))
+      }
   }
 };
 const mutations = {
   GETCODE(state, code) {
     state.code = code;
   },
-  GETUSERINFO(state,userInfo){
+ GETUSERINFO(state,userInfo){
     state.userInfo=userInfo
+  },
+  LOGOUT(state){
+    state.userInfo={}
+    localStorage.removeItem("token")
   }
 };
 const getters = {};

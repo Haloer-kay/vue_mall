@@ -18,8 +18,8 @@ const requests = axios.create({
 */
 requests.interceptors.request.use((config)=>{
   nprogress.start()
-  if(getToken()){
-    config.headers.token=getToken()
+  if(store.state.user.token){
+    config.headers.token=store.state.user.token
   }
   config.headers.userTempId=getUUID()
   return config

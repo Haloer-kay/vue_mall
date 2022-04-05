@@ -8,6 +8,7 @@ import Register from "@/pages/Register";
 import Detail from "@/pages/Detail"
 import AddCartSuccess from "@/pages/AddCartSuccess"
 import ShopCart from "@/pages/ShopCart"
+import store from "@/store"
 
 
 const originalPush = VueRouter.prototype.push
@@ -16,55 +17,74 @@ VueRouter.prototype.push = function push(location) {
 }
 
 Vue.use(VueRouter);
+let router=new VueRouter({
+  routes:[
+    {
+      path:"/home",
+      component:Home,
+      meta:{showFooter:true}
+    },
+    {
+      //占位符名字必须与params对象的key值相同
+      path:"/search/:keyword?",
+      component:Search,
+      meta:{showFooter:true},
+      name:"search",
+    },
+    {
+      path:"/login",
+      component:Login,
+      meta:{showFooter:false}
+    },
+    {
+      path:"/register",
+      component:Register,
+      meta:{showFooter:false}
+    },
+    {
+      path:"/item/:skuId",
+      component:Detail,
+      meta:{showFooter:false}
+    },
+    {
+      path:"/addcartsuccess",
+      name:"addcartsuccess",
+      component:AddCartSuccess,
+      meta:{showFooter:true}
+    },
+    {
+      path:"/shopcart",
+      component:ShopCart,
+      meta:{showFooter:true}
+    },
+    {
+      path:"*",
+      redirect:'/home'
+    },
 
-export default new VueRouter({
-    routes:[
-      {
-        path:"/home",
-        component:Home,
-        meta:{showFooter:true}
-      },
-      {
-        //占位符名字必须与params对象的key值相同
-        path:"/search/:keyword?",
-        component:Search,
-        meta:{showFooter:true},
-        name:"search",
-      },
-      {
-        path:"/login",
-        component:Login,
-        meta:{showFooter:false}
-      },
-      {
-        path:"/register",
-        component:Register,
-        meta:{showFooter:false}
-      },
-      {
-        path:"/item/:skuId",
-        component:Detail,
-        meta:{showFooter:false}
-      },
-      {
-        path:"/addcartsuccess",
-        name:"addcartsuccess",
-        component:AddCartSuccess,
-        meta:{showFooter:true}
-      },
-      {
-        path:"/shopcart",
-        component:ShopCart,
-        meta:{showFooter:true}
-      },
-      {
-        path:"*",
-        redirect:'/home'
-      },
-  
-    ],
-    // 控制滚动行为
-    scrollBehavior(to,from,savedPosition){
-      return {y : 0}
-    }
+  ],
+  // 控制滚动行为
+  scrollBehavior(to,from,savedPosition){
+    return {y : 0}
+  }
 })
+
+router.beforeEach(async (to,from,next)=>{
+  if(to.path=='/login'){
+    if(store.state.user.userInfo.username){
+      next("/home")
+    }
+    else{
+     next()
+    }
+  }else{
+    try{
+      await store.dispatch("getUserInfo")
+      next()
+    }catch(error){
+      console.log(error.message);
+    }
+  }
+})
+
+export default router
